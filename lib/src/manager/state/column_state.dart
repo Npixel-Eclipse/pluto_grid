@@ -748,15 +748,17 @@ mixin ColumnState implements IPlutoGridState {
       columnField: columnField,
     );
 
-    final rows = refColumns.originalList.map(toRow).toList(growable: false);
+    // Name 컬럼 예외 처리
+    final rowsWithoutName = refColumns.originalList.where((e) => e.title != "Name");
+    final rows = rowsWithoutName.map(toRow).toList(growable: false);
 
     void handleOnRowChecked(PlutoGridOnRowCheckedEvent event) {
       if (event.isAll) {
-        hideColumns(refColumns.originalList, event.isChecked != true);
+        hideColumns(rowsWithoutName.toList(), event.isChecked != true);
       } else {
         final checkedField = event.row!.cells[columnField]!.value.toString();
-        final checkedColumn = refColumns.originalList.firstWhere(
-          (column) => column.field == checkedField,
+        final checkedColumn = rowsWithoutName.firstWhere(
+              (column) => column.field == checkedField,
         );
         hideColumn(checkedColumn, event.isChecked != true);
       }
